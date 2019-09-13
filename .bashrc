@@ -60,7 +60,7 @@ if [ -n "$force_color_prompt" ]; then
 fi
 
 if [ "$color_prompt" = yes ]; then
-    PS1='\n\n${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\n\$ '
+    PS1='\n\n${debian_chroot:+($debian_chroot)}\[\033[01;32m\]Yukly\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\n(๑╹×╹) < '
 else
     PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
 fi
@@ -119,8 +119,3 @@ if ! shopt -oq posix; then
   fi
 fi
 
-PATH="/home/yukly/perl5/bin${PATH:+:${PATH}}"; export PATH;
-PERL5LIB="/home/yukly/perl5/lib/perl5${PERL5LIB:+:${PERL5LIB}}"; export PERL5LIB;
-PERL_LOCAL_LIB_ROOT="/home/yukly/perl5${PERL_LOCAL_LIB_ROOT:+:${PERL_LOCAL_LIB_ROOT}}"; export PERL_LOCAL_LIB_ROOT;
-PERL_MB_OPT="--install_base \"/home/yukly/perl5\""; export PERL_MB_OPT;
-PERL_MM_OPT="INSTALL_BASE=/home/yukly/perl5"; export PERL_MM_OPT;

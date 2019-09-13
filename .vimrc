@@ -1,62 +1,66 @@
-"dein Scripts-----------------------------
-if &compatible
-  set nocompatible               " Be iMproved
-endif
+" プラグインが実際にインストールされるディレクトリ
+let s:dein_dir = expand('~/.cache/dein')
+" dein.vim 本体
+let s:dein_repo_dir = s:dein_dir . '/repos/github.com/Shougo/dein.vim'
 
-let s:dein_path = expand('~/.cache/dein')
-let s:dein_repo_path = s:dein_path . '/repos/github.com/Shougo/dein.vim'
-
-" dein.vim がなければ github からclone
+" dein.vim がなければ github から落としてくる
 if &runtimepath !~# '/dein.vim'
-  if !isdirectory(s:dein_repo_path)
-    execute '!git clone https://github.com/Shougo/dein.vim' s:dein_repo_path
+  if !isdirectory(s:dein_repo_dir)
+    execute '!git clone https://github.com/Shougo/dein.vim' s:dein_repo_dir
   endif
-  execute 'set runtimepath^=' . fnamemodify(s:dein_repo_path, ':p')
+  execute 'set runtimepath^=' . fnamemodify(s:dein_repo_dir, ':p')
 endif
 
-if dein#load_state(s:dein_path)
-  call dein#begin(s:dein_path)
+" 設定開始
+if dein#load_state(s:dein_dir)
+  call dein#begin(s:dein_dir)
 
-  let g:config_dir  = expand('~/.cache/dein/userconfig')
-  let s:toml        = g:config_dir . '/plugins.toml'
-  let s:lazy_toml   = g:config_dir . '/plugins_lazy.toml'
+  " プラグインリストを収めた TOML ファイル
+  " 予め TOML ファイル（後述）を用意しておく
+  let g:rc_dir    = expand('~/.cache/dein/userconfig')
+  let s:toml      = g:rc_dir . '/plugins.toml'
+  let s:lazy_toml = g:rc_dir . '/plugins_lazy.toml'
 
-  " TOML 読み込み
+  " TOML を読み込み、キャッシュしておく
   call dein#load_toml(s:toml,      {'lazy': 0})
   call dein#load_toml(s:lazy_toml, {'lazy': 1})
 
+  " 設定終了
   call dein#end()
   call dein#save_state()
 endif
 
-
-" Required:
-filetype plugin indent on
-syntax enable
-
-" インストールされていないプラグインがあればインストールする
-" If you want to install not installed plugins on startup.
+" もし、未インストールものものがあったらインストール
 if dein#check_install()
   call dein#install()
 endif
-"End dein Scripts-------------------------
 
 
-" NeoSnippet 設定
-let g:neosnippet#snippets_directory='~/.vim/my_snippet'
- 
+
+" Plugin key-mappings.
+imap <C-k>     <Plug>(neosnippet_expand_or_jump)
+smap <C-k>     <Plug>(neosnippet_expand_or_jump)
+xmap <C-k>     <Plug>(neosnippet_expand_target)
+
 " SuperTab like snippets behavior.
-imap  <expr><TAB>
-    \ pumvisible() ? "\<C-n>" :
-    \ neosnippet#expandable_or_jumpable() ?
-    \ "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
- 
+imap <expr><TAB>
+ \ pumvisible() ? "\<C-n>" :
+ \ neosnippet#expandable_or_jumpable() ?
+ \    "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
 smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
-    \ "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
- 
+\ "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
+
+" For conceal markers.
 if has('conceal')
-  set conceallevel=2 concealcursor=i
+  set conceallevel=2 concealcursor=niv
 endif
+
+"set snippet file dir
+let g:neosnippet#snippets_directory='~/.cache/dein/repos/github.com/Shougo/neosnippet-snippets/neosnippets'
+
+filetype plugin indent on
+syntax enable
+
 
 
 
@@ -67,6 +71,8 @@ set fenc=utf-8
 set nobackup
 " スワップファイルを作らない
 set noswapfile
+" [{}]をハイライトしない
+let c_no_bracket_error = 1
 " 編集中のファイルが変更されたら自動で読み直す
 set autoread
 " バッファが編集中でもその他のファイルを開けるように
@@ -74,7 +80,9 @@ set hidden
 " 入力中のコマンドをステータスに表示する
 set showcmd
 " クリップボードを共有する
-set clipboard=unnamed,autoselect
+set clipboard=unnamed
+" TABを削除できるようにする
+set backspace=indent,eol,start 
 " 全角スペースを可視化
 autocmd Colorscheme * highlight FullWidthSpace ctermbg=white
 autocmd VimEnter * match FullWidthSpace /　/
@@ -104,7 +112,15 @@ function! Runner()
         :! bash ~/Desktop/shell/crun.sh %
     elseif name == "py"
         :! bash ~/Desktop/shell/pyrun.sh %
+    elseif name == "sml"
+        :! bash ~/Desktop/shell/smlrun.sh %
     endif
+endfunction
+
+" smlnj Runner
+function! SML()
+    :w
+    :! sml %
 endfunction
 
 " Set input
@@ -113,6 +129,12 @@ function! Input()
     :execute ":normal! \<C-w>L"
     :execute ":normal! \<C-W>h"
     :execute ":normal! \<C-w>25>"
+endfunction
+
+"copy
+function! Copy()
+    :w
+    :! cat % | pbcopy
 endfunction
 
 
@@ -138,6 +160,10 @@ set wildmode=list:longest
 " 折り返し時に表示行単位での移動できるようにする
 nnoremap j gj
 nnoremap k gk
+
+autocmd ColorScheme * highlight Comment ctermfg=110
+autocmd ColorScheme * highlight Visual ctermbg=18 
+
 " color
 colorscheme tender
 
